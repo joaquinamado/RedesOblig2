@@ -41,6 +41,7 @@ def enviadorCliente(address, queue):
                     skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     skt.bind(('192.168.0.125', ))
                     puerto = int(mensaje)
+                    skt.connect((address, puerto))
                 elif (mensaje == 'desconectar'):
                     return
             else:
@@ -52,7 +53,7 @@ def enviadorCliente(address, queue):
                         case 'pausa':
                             pausado = True 
                         case 'desconectar':
-                            skt.close()
+                            #skt.close()
                             return
                         case _:
                             pass
