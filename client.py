@@ -1,5 +1,6 @@
 import socket
 
+
 def client(server_ip, server_port, vlc_port):
 
     try:
@@ -10,7 +11,10 @@ def client(server_ip, server_port, vlc_port):
         fin = False
         while (not fin):
             command = str(input())
-            master.sendall(command.encode('utf-8'))
+            master.send(command.encode('utf-8'))
+            data = master.recv(1024)
+            print(data.decode('utf-8'))
+            print(connected)
             comandoSinN = command.split('\n')[0]
             if (command.find('CONECTAR') and not connected):
                 connected = True
@@ -46,4 +50,4 @@ def client(server_ip, server_port, vlc_port):
 
 
 
-    
+client("127.0.0.1", 65535, 65534)
