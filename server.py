@@ -42,51 +42,48 @@ def controladorCliente(num, client):
     pausado = False
     conectado = False
     buff = ""
-    recibidoComando = False
     while True:
-        while not recibidoComando:
-            print('Esperando comando')
-            data = client.recv(4096)
-            if(not data):
-                client.close()
-                break
-            buff += data.decode('utf-8')
-            print(buff)
-            recibidoComando = buff.find('\n') != -1
+        data = client.recv(4096)
+        if not data:
+            client.close()
+            break
+        buff += data.decode('utf-8')
 
-        primer_comando = buff.split('\n')[0]
-        indice = buff.find('\n') + 1
-        buff = buff[indice:]
+        # Esto es lo q parece q me funciono, revisar todos los q esten en el buff
+        while '\n' in buff:
+            primer_comando, buff = buff.split('\n', 1)
+            print(primer_comando)
+            puerto = client.getpeername()[1]
 
-        puerto = client.getpeername()[1]
-        if(primer_comando.find("CONECTAR") != -1):
-            try:
-                puerto = int(primer_comando.replace("CONECTAR ", ""))
-            except ValueError:
-                puerto = client.getpeername()[1]
-            clientes[(client.getpeername()[0], puerto)] = True
-            conectado = True
-            client.send("OK\n".encode('utf-8'))
-        else:
-            match primer_comando:
-                case "INTERRUMPIR":
-                    if conectado and not pausado:
-                        pausado = True
-                        clientes[(client.getpeername()[0], puerto)] = False
+            if primer_comando.startswith("CONECTAR "):
+                # Por si no agrega el puerto al comando 
+                try:
+                    puerto = int(primer_comando.replace("CONECTAR ", ""))
+                except ValueError:
+                    puerto = client.getpeername()[1]
+                clientes[(client.getpeername()[0], puerto)] = True
+                conectado = True
+                client.send("OK\n".encode('utf-8'))
+            else:
+                match primer_comando:
+                    case "INTERRUMPIR":
+                        if conectado and not pausado:
+                            pausado = True
+                            clientes[(client.getpeername()[0], puerto)] = False
+                            client.send("OK\n".encode('utf-8'))
+                    case "CONTINUAR":
+                        if conectado and pausado:
+                            pausado = False
+                            clientes[(client.getpeername()[0], puerto)] = True
+                            client.send("OK\n".encode('utf-8'))
+                    case "DESCONECTAR":
+                        if conectado:
+                            clientes.pop((client.getpeername()[0], puerto))
                         client.send("OK\n".encode('utf-8'))
-                case "CONTINUAR":
-                    if conectado and pausado:
-                        pausado = False
-                        clientes[(client.getpeername()[0], puerto)] = True
-                        client.send("OK\n".encode('utf-8'))
-                case "DESCONECTAR":
-                    if conectado:
-                        clientes.pop((client.getpeername()[0], puerto))
-                    client.send("OK\n".encode('utf-8'))
-                    client.close()
-                    return
-                case _:
-                    continue
+                        client.close()
+                        return
+                    case _:
+                        continue
 
 def enviadorClientes (num, cola):
     enviador = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

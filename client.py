@@ -41,7 +41,6 @@ def client(server_ip, server_port, vlc_port):
                 break
 
             print(data.decode('utf-8'))
-            print(connected)
 
         master.close()
 
