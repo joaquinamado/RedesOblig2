@@ -47,20 +47,23 @@ def controladorCliente(num, client):
         while not recibidoComando:
             print('Esperando comando')
             data = client.recv(4096)
-            buff += data.decode('utf-8')
-            print(buff)
             if(not data):
                 client.close()
                 break
-            else:
-                recibidoComando = buff.find('\n') != -1
+            buff += data.decode('utf-8')
+            print(buff)
+            recibidoComando = buff.find('\n') != -1
 
         primer_comando = buff.split('\n')[0]
         indice = buff.find('\n') + 1
         buff = buff[indice:]
 
-        if(primer_comando.find("CONECTAR")):
-            puerto = int(primer_comando.replace("CONECTAR ", ""))
+        puerto = client.getpeername()[1]
+        if(primer_comando.find("CONECTAR") != -1):
+            try:
+                puerto = int(primer_comando.replace("CONECTAR ", ""))
+            except ValueError:
+                puerto = client.getpeername()[1]
             clientes[(client.getpeername()[0], puerto)] = True
             conectado = True
             client.send("OK\n".encode('utf-8'))
@@ -92,6 +95,6 @@ def enviadorClientes (num, cola):
         datagrama = cola.get(block = True)
         for cliente in clientes:
             if (clientes[cliente]):
-                enviador.send(cliente[0], cliente[1], datagrama)
+                enviador.send(cliente, datagrama)
 
 main("127.0.0.1", 65535)
