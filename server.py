@@ -92,6 +92,6 @@ def enviadorClientes (num, cola):
         datagrama = cola.get(block = True)
         for cliente in clientes:
             if (clientes[cliente]):
-                enviador.send(cliente, datagrama)
+                enviador.sendto(datagrama, cliente)
 
 main("127.0.0.1", 65535)
