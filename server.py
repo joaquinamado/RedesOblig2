@@ -53,7 +53,6 @@ def controladorCliente(num, client):
         while '\n' in buff:
             primer_comando, buff = buff.split('\n', 1)
             print(primer_comando)
-            puerto = client.getpeername()[1]
 
             if primer_comando.startswith("CONECTAR "):
                 # Por si no agrega el puerto al comando 
@@ -92,6 +91,7 @@ def enviadorClientes (num, cola):
         datagrama = cola.get(block = True)
         for cliente in clientes:
             if (clientes[cliente]):
+                #print(cliente[0] + ":" + str(cliente[1]) + " " + str(clientes[cliente]))
                 enviador.sendto(datagrama, cliente)
 
 main("127.0.0.1", 65535)
