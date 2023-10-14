@@ -15,9 +15,7 @@ def main(server_ip, server_port):
         master.bind((server_ip, server_port))
         master.listen(5)
         while True:
-            print('Esperando conexion')
             client, address = master.accept()
-            print('Llego conexion')
             threading.Thread(target=controladorCliente, args=(1, client)).start()
 
         #master.close()
@@ -70,6 +68,7 @@ def controladorCliente(num, client):
                             pausado = True
                             clientes[(client.getpeername()[0], puerto)] = False
                             client.send("OK\n".encode('utf-8'))
+
                     case "CONTINUAR":
                         if conectado and pausado:
                             pausado = False
