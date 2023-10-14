@@ -15,7 +15,7 @@ def client(server_ip, server_port, vlc_port):
             else:
                 command += '\n'
 
-            if (command.find('CONECTAR') != -1 and not connected):
+            if (command.startswith('CONECTAR') != -1 and not connected and command.find('DES') == -1):
                 connected = True
             else:
                 match command:
@@ -30,14 +30,13 @@ def client(server_ip, server_port, vlc_port):
                     case 'DESCONECTAR\n':
                         if(connected):
                             connected = False
-                            break
                         pass
                     case _ :
                         continue
 
             master.sendall(command.encode('utf-8'))
             data = master.recv(4096)
-            if "OK" not in data.decode('utf-8'):
+            if "OK" not in data.decode('utf-8') or not connected:
                 break
 
             print(data.decode('utf-8'))

@@ -54,7 +54,7 @@ def controladorCliente(num, client):
             primer_comando, buff = buff.split('\n', 1)
             print(primer_comando)
 
-            if primer_comando.startswith("CONECTAR "):
+            if (primer_comando.startswith("CONECTAR ") and (primer_comando.find("DES") == -1)):
                 # Por si no agrega el puerto al comando 
                 try:
                     puerto = int(primer_comando.replace("CONECTAR ", ""))
@@ -77,6 +77,7 @@ def controladorCliente(num, client):
                             client.send("OK\n".encode('utf-8'))
                     case "DESCONECTAR":
                         if conectado:
+                            #del clientes[(client.getpeername()[0], puerto)]
                             clientes.pop((client.getpeername()[0], puerto))
                         client.send("OK\n".encode('utf-8'))
                         client.close()
@@ -91,7 +92,6 @@ def enviadorClientes (num, cola):
         datagrama = cola.get(block = True)
         for cliente in clientes:
             if (clientes[cliente]):
-                #print(cliente[0] + ":" + str(cliente[1]) + " " + str(clientes[cliente]))
                 enviador.sendto(datagrama, cliente)
 
 main("127.0.0.1", 65535)
