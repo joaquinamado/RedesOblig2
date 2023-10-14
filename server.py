@@ -70,15 +70,26 @@ def controladorCliente(num, client):
                             pausado = True
                             clientes[(client.getpeername()[0], puerto)] = False
                             client.send("OK\n".encode('utf-8'))
+                            print("Clientes")
+                            for x in clientes:
+                                print(x)
+
                     case "CONTINUAR":
                         if conectado and pausado:
                             pausado = False
                             clientes[(client.getpeername()[0], puerto)] = True
                             client.send("OK\n".encode('utf-8'))
+                            print("Clientes")
+                            for x in clientes:
+                                print(x)
                     case "DESCONECTAR":
                         if conectado:
-                            clientes.pop((client.getpeername()[0], puerto))
+                            clientes.remove((client.getpeername()[0], puerto))
                         client.send("OK\n".encode('utf-8'))
+                        print("Clientes")
+                        for x in clientes:
+                            print(x)
+                        print("_________________________")
                         client.close()
                         return
                     case _:
