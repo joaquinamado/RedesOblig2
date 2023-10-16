@@ -3,7 +3,6 @@ import threading
 import os
 from queue import Queue
 
-fin = False
 clientes = {}
 
 def main(server_ip, server_port):
@@ -47,12 +46,11 @@ def controladorCliente(num, client):
             break
         buff += data.decode('utf-8')
 
-        # Esto es lo q parece q me funciono, revisar todos los q esten en el buff
         while '\n' in buff:
             primer_comando, buff = buff.split('\n', 1)
             print(primer_comando)
 
-            if (primer_comando.startswith("CONECTAR ") and (primer_comando.find("DES") == -1)):
+            if (primer_comando.startswith("CONECTAR ")):
                 # Por si no agrega el puerto al comando 
                 try:
                     puerto = int(primer_comando.replace("CONECTAR ", ""))

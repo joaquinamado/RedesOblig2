@@ -1,6 +1,5 @@
 import socket
 
-
 def client(server_ip, server_port, vlc_port):
 
     try:
@@ -22,15 +21,12 @@ def client(server_ip, server_port, vlc_port):
                     case 'INTERRUMPIR\n':
                         if(connected and not paused):
                             paused = True
-                        pass
                     case 'CONTINUAR\n':
                         if(connected and paused):
                             paused = False
-                        pass
                     case 'DESCONECTAR\n':
                         if(connected):
                             connected = False
-                        pass
                     case _ :
                         continue
 
@@ -42,7 +38,6 @@ def client(server_ip, server_port, vlc_port):
             print(data.decode('utf-8'))
 
         master.close()
-
 
     except socket.error as e:
         print(str(e))
