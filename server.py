@@ -1,12 +1,13 @@
 import socket
 import threading
-import os
+import sys
 from queue import Queue
 
 clientes = {}
 
 def main(server_ip, server_port):
     try:
+        socket.inet_aton(server_ip)
         cola = Queue()
         threading.Thread(target=recibirVLC, args=(server_ip, server_port, cola)).start()
         threading.Thread(target=enviadorClientes, args=(1, cola)).start()
@@ -55,7 +56,8 @@ def controladorCliente(num, client):
                 try:
                     puerto = int(primer_comando.replace("CONECTAR ", ""))
                 except ValueError:
-                    puerto = client.getpeername()[1]
+                    client.send("OK\n".encode('utf-8'))
+                    continue
                 clientes[(client.getpeername()[0], puerto)] = True
                 conectado = True
                 client.send("OK\n".encode('utf-8'))
@@ -91,4 +93,5 @@ def enviadorClientes (num, cola):
             if (clientes[cliente]):
                 enviador.sendto(datagrama, cliente)
 
-main("127.0.0.1", 65535)
+#main("127.0.0.1", 65535)
+main(str(sys.argv[1]), int(sys.argv[2]))

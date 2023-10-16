@@ -1,8 +1,10 @@
 import socket
+import sys
 
 def client(server_ip, server_port, vlc_port):
 
     try:
+        socket.inet_aton(server_ip)
         master = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         master.connect((server_ip, server_port))
         paused = False
@@ -44,4 +46,5 @@ def client(server_ip, server_port, vlc_port):
 
 
 
-client("127.0.0.1", 65535, 65534)
+#client("127.0.0.1", 65535, 65534)
+client(str(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
